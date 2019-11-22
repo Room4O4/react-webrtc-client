@@ -19,10 +19,6 @@ class Home extends React.Component {
     this.props.joinRoom(this.state.roomName, this.state.userName);
   };
 
-  handleSendButtonClick = () => {
-    this.props.sendData('Hi. This is my first webRTC message');
-  };
-
   handleRoomNameChange = event => {
     this.setState({
       roomName: event.target.value
@@ -56,28 +52,17 @@ class Home extends React.Component {
   };
 
   displayJoinedContent = () => {
-    const { classes } = this.props;
     return (
       <Grid container direction="column" justify="center" alignItems="center">
-        <Grid item xs={2}>
+        <Grid item xs={6}>
           <Typography> Peers in room {this.props.room}</Typography>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={6}>
           <Grid container direction="row">
             {this.props.peers.map(peer => (
-              <Peer key={peer} name={peer} />
+              <Peer key={peer} name={peer} peerType={this.props.peerType} sendFile={this.props.sendFile} />
             ))}
           </Grid>
-        </Grid>
-        <Grid item xs={2}>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            onClick={this.handleSendButtonClick}
-          >
-            Send
-          </Button>
         </Grid>
       </Grid>
     );

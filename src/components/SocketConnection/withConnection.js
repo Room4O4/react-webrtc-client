@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import ConnectionStates from '../../enums/ConnectionStates';
 import DataChannelTypes from '../../enums/DataChannelTypes';
 import AppConstants from '../../utils/AppConstants';
+import PeerTypes from '../../enums/PeerTypes';
 
 const withConnection = WrappedComponent =>
   class Connection extends React.Component {
@@ -21,7 +22,8 @@ const withConnection = WrappedComponent =>
         room: null,
         myId: null,
         peerConnection: null,
-        dataChannel: null
+        dataChannel: null,
+        peerType: null
       };
     }
 
@@ -71,7 +73,8 @@ const withConnection = WrappedComponent =>
         myId: id,
         peers: existingPeers
           ? existingPeers.filter(peerId => peerId !== id)
-          : []
+          : [],
+        peerType: existingPeers ? PeerTypes.RECIPIENT : PeerTypes.SENDER
       });
     };
 
@@ -200,11 +203,21 @@ const withConnection = WrappedComponent =>
 
     onReceiveMessage = event => {
       console.log('onReceiveMessage', event.data);
+      this.downloadBlob(event.data, 'test.jpg')
+
     };
 
     onReceiveChannelStateChange = event => {
       console.log('onReceiveChannelStateChange', event);
     };
+
+    downloadBlob = (blob, filename) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename || 'download';
+      a.click();
+    }
 
     // Child component prop methods
 
@@ -212,8 +225,8 @@ const withConnection = WrappedComponent =>
       this.socket.emit('join', roomName);
     };
 
-    sendData = data => {
-      this.dataChannel.send(data);
+    sendFile = file => {
+      this.dataChannel.send(file);
     };
 
     render() {
@@ -221,7 +234,7 @@ const withConnection = WrappedComponent =>
         <WrappedComponent
           {...this.state}
           joinRoom={this.joinRoom}
-          sendData={this.sendData}
+          sendFile={this.sendFile}
         />
       );
     }
