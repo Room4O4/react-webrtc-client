@@ -4,19 +4,18 @@ import { withStyles } from '@material-ui/core/styles';
 import { Typography, Grid, Button } from '@material-ui/core';
 import styles from './Peer.css';
 import PeerTypes from '../../enums/PeerTypes';
-
+import SocketContext from '../../contexts/SocketContext';
 
 class Peer extends React.Component {
-
   constructor(props) {
     super(props);
     this.fileInputRef = React.createRef();
   }
 
-  handleFormSubmit = (event) => {
+  handleFormSubmit = event => {
     event.preventDefault();
-    this.props.sendFile(this.fileInputRef.current.files[0]);
-  }
+    this.props.sendFiles(this.fileInputRef.current.files);
+  };
 
   loadSendButton = () => {
     const { classes } = this.props;
@@ -24,10 +23,7 @@ class Peer extends React.Component {
       <form onSubmit={this.handleFormSubmit}>
         <Grid container direction="column" justify="center" alignItems="center">
           <Grid item xs={6}>
-            <input
-              name="file"
-              type="file"
-              ref={this.fileInputRef} />
+            <input name="file" type="file" ref={this.fileInputRef} />
           </Grid>
           <Grid item xs={2}>
             <Button
@@ -37,12 +33,12 @@ class Peer extends React.Component {
               type="submit"
             >
               Send
-          </Button>
+            </Button>
           </Grid>
         </Grid>
       </form>
     );
-  }
+  };
 
   render() {
     const { classes } = this.props;
@@ -55,12 +51,15 @@ class Peer extends React.Component {
             src={faker.image.avatar()}
           ></img>
           <Typography>{faker.name.firstName()}</Typography>
-          {(this.props.peerType && this.props.peerType === PeerTypes.SENDER) ? this.loadSendButton() : null}
+          {this.props.peerType && this.props.peerType === PeerTypes.SENDER
+            ? this.loadSendButton()
+            : null}
         </Grid>
-      </Grid >
+      </Grid>
     );
   }
+}
 
-};
+Peer.contextType = SocketContext;
 
 export default withStyles(styles)(Peer);

@@ -11,6 +11,7 @@ import Peer from '../Peers/Peer';
 
 import styles from './Home.css.js';
 import ConnectionStates from '../../enums/ConnectionStates.js';
+import withPeerConnection from '../SocketConnection/withPeerConnection';
 
 class Home extends React.Component {
   state = { roomName: 'default' };
@@ -59,9 +60,16 @@ class Home extends React.Component {
         </Grid>
         <Grid item xs={6}>
           <Grid container direction="row">
-            {this.props.peers.map(peer => (
-              <Peer key={peer} name={peer} peerType={this.props.peerType} sendFile={this.props.sendFile} />
-            ))}
+            {this.props.peers.map(peer => {
+              const PeerWithPeerConnection = withPeerConnection(Peer);
+              return (
+                <PeerWithPeerConnection
+                  key={peer}
+                  peerId={peer}
+                  peerType={this.props.peerType}
+                />
+              );
+            })}
           </Grid>
         </Grid>
       </Grid>
